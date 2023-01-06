@@ -13,7 +13,11 @@ def display_timeit_cache():
         return
 
     sorted_cache = {
-        key: value for key, value in sorted(TIMEIT_CACHE.items(), key=lambda item: item[1]['total_time'])
+        key: value for key, value in sorted(
+            TIMEIT_CACHE.items(),
+            key=lambda item: item[1]['total_time'],
+            reverse=True,
+        )
     }
     max_name_size = max(len(name) for name in sorted_cache)
 

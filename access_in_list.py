@@ -1,7 +1,17 @@
+import numpy as np
 from line_profiler_pycharm import profile
 
-from access_item_in_list import multi_access
 from utils.timeit import timeit
+
+
+@timeit(display=True)
+@profile
+def multi_access(access_nb, numbers):
+    middle = len(numbers) // 2
+    for _ in range(access_nb):
+        numbers[0]
+        numbers[middle]
+        numbers[-1]
 
 
 def cross_access(numbers, indexes, i):
@@ -18,18 +28,35 @@ def multi_cross_access(access_nb, numbers, indexes):
         cross_access(numbers, indexes, -1)
 
 
+@timeit(display=True)
+@profile
+def multi_complexe_access(access_nb, numbers):
+    middle = len(numbers) // 2
+    for _ in range(access_nb):
+        numbers[0].value
+        numbers[middle].value
+        numbers[-1].value
+
+
 @timeit
 @profile
 def main(access_nb: int, number_nb: int) -> None:
 
     # ---- Basic
     numbers = list(range(number_nb))
+    multi_access(access_nb, numbers)
+
+    # ---- Numpy
+    numbers = np.array(range(number_nb))
+    multi_access(access_nb, numbers)
+
+    # ---- Cross - Basic
+    numbers = list(range(number_nb))
     indexes = list(range(number_nb))
     multi_cross_access(access_nb, numbers, indexes)
 
 
-    # ---- Numpy
-    import numpy as np
+    # ---- Cross - Numpy
     numbers = np.array(range(number_nb))
     indexes = np.array(range(number_nb))
     multi_cross_access(access_nb, numbers, indexes)
@@ -42,8 +69,7 @@ def main(access_nb: int, number_nb: int) -> None:
             self.value = value
 
     numbers = [IntPointer(i) for i in range(number_nb)]
-    multi_access(access_nb, numbers)
-
+    multi_complexe_access(access_nb, numbers)
 
 
 if __name__ == '__main__':
