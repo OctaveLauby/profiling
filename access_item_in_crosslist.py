@@ -1,19 +1,21 @@
 from line_profiler_pycharm import profile
 
+from access_item_in_list import multi_access
 from utils.timeit import timeit
 
 
-def access(numbers, indexes, i):
-    return numbers[i]
+def cross_access(numbers, indexes, i):
+    return numbers[indexes[i]]
 
 
+@timeit(display=True)
 @profile
-def multi_access(access_nb, numbers, indexes):
+def multi_cross_access(access_nb, numbers, indexes):
     middle = len(numbers) // 2
     for _ in range(access_nb):
-        access(numbers, indexes, 0)
-        access(numbers, indexes, middle)
-        access(numbers, indexes, -1)
+        cross_access(numbers, indexes, 0)
+        cross_access(numbers, indexes, middle)
+        cross_access(numbers, indexes, -1)
 
 
 @timeit
@@ -23,14 +25,25 @@ def main(access_nb: int, number_nb: int) -> None:
     # ---- Basic
     numbers = list(range(number_nb))
     indexes = list(range(number_nb))
-    multi_access(access_nb, numbers, indexes)
+    multi_cross_access(access_nb, numbers, indexes)
 
 
     # ---- Numpy
     import numpy as np
     numbers = np.array(range(number_nb))
     indexes = np.array(range(number_nb))
-    multi_access(access_nb, numbers, indexes)
+    multi_cross_access(access_nb, numbers, indexes)
+
+    # ---- Elaborate
+    class IntPointer:
+        __slots__ = ('value',)
+
+        def __init__(self, value: int):
+            self.value = value
+
+    numbers = [IntPointer(i) for i in range(number_nb)]
+    multi_access(access_nb, numbers)
+
 
 
 if __name__ == '__main__':

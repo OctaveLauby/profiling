@@ -3,17 +3,14 @@ from line_profiler_pycharm import profile
 from utils.timeit import timeit
 
 
-def access(numbers, i):
-    return numbers[i]
-
-
+@timeit(display=True)
 @profile
 def multi_access(access_nb, numbers):
     middle = len(numbers) // 2
     for _ in range(access_nb):
-        access(numbers, 0)
-        access(numbers, middle)
-        access(numbers, -1)
+        numbers[0]
+        numbers[middle]
+        numbers[-1]
 
 
 @timeit

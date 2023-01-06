@@ -6,16 +6,33 @@ from typing import Callable
 TIMEIT_CACHE = {}
 
 
+@atexit.register
 def display_timeit_cache():
+    """Display timed function at exit"""
     if not TIMEIT_CACHE:
         return
+
+    sorted_cache = {
+        key: value for key, value in sorted(TIMEIT_CACHE.items(), key=lambda item: item[1]['total_time'])
+    }
+    max_name_size = max(len(name) for name in sorted_cache)
+
     print()
     print('Time Spent in functions:')
-    for name, metrics in TIMEIT_CACHE.items():
-        print('> {name}:  {total_time}s | called {calls} time(s) [{fails} fail(s)]'.format(name=name, **metrics))
+    for name, metrics in sorted_cache.items():
+        try:
+            meantime = metrics['total_time'] / metrics['calls']
+        except ZeroDivisionError:
+            meantime = None
+        print('> {name}:  {total_time:.5f}s [mean={meantime:.5f}s] | called {calls} time(s) [{fails} fail(s)]'.format(
+            name=name.ljust(max_name_size),
+            meantime=meantime,
+            **metrics,
+        ))
 
 
 def timeit(func: Callable = None, name: str = None, display: bool = False) -> Callable:
+    """Decorator to track func calls and time spent"""
     if func is None:
         return partial(timeit, name=name, display=display)
 
@@ -41,6 +58,3 @@ def timeit(func: Callable = None, name: str = None, display: bool = False) -> Ca
                 print(f'{name} took {time_spent}s')
         return res
     return wrapped
-
-
-atexit.register(display_timeit_cache)
